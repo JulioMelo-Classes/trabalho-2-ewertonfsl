@@ -1,22 +1,32 @@
-#include "Sistema.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+
+#include "Sistema.h"
+#include "Usuario.h"
 
 using namespace std;
 
-#include "Sistema.h"
-#include <iostream>
-#include <sstream>
-#include <algorithm>
 
 /* COMANDOS */
 string Sistema::quit() {
-  return "Saindo...";
+  return "Finalizando o Concordo";
 }
 
-string Sistema::create_user (const string email, const string senha, const string nome) {
-	return "create_user NÃO IMPLEMENTADO";
+string Sistema::create_user (const string email, const string senha, const string nome) 
+{
+  if ( validaEmail( email ) ) 
+  	return "Este e-mail já está registrado";
+
+  Usuario *user = new Usuario( email, senha, nome );
+  
+  atribuiId( *user );
+
+  usuarios.push_back( *user );
+
+  cout << "Criando usuário " + user->getNome() + " (" + user->getEmail() + ")" << endl;
+  
+  return "Usuário criado";
 }
 
 std::string Sistema::delete_user (const std::string email, const std::string senha){
@@ -91,3 +101,51 @@ string Sistema::list_messages(int id) {
 	return "list_messages NÃO IMPLEMENTADO";
 }
 
+
+/**
+ * Método responsável por conferir se já existe um email cadastrado durante o cadastro.
+ * @param email o email do usuário informado no comando create-user.
+ * @return T caso email já esteja cadastrado. F caso contrário. 
+ */
+bool Sistema::validaEmail( string email ) 
+{
+  for (int i = 0; i < usuarios.size(); i++) 
+  {
+    if ( usuarios[i].getEmail() == email)
+	  return true;
+  }
+
+  return false;
+}
+
+/**
+ * Método responsável por medir o tamanho do vetor usuários.
+ * @return a quantidade de usuários ou o valor nulo, caso ainda não hajam usuários criados. 
+ */
+Usuario* Sistema::buscaUltimo() 
+{
+  int tamanho = usuarios.size();
+
+  if (tamanho == 0)
+	  return nullptr;
+
+  return &usuarios[ tamanho-1 ];
+}
+
+/**
+ * Método responsável por atribuir o id de um usuário.
+ * @param user um usuário cadastrado no sistema.
+ */
+void Sistema::atribuiId( Usuario &user ) 
+{
+  Usuario *ultimoUsuario = buscaUltimo();
+
+  if ( ultimoUsuario == nullptr )
+    user.setId( 1 );
+
+  else 
+  {
+    int novoId = ultimoUsuario->getId() + 1;
+    user.setId( novoId );
+  }
+}

@@ -1,10 +1,12 @@
 #ifndef SISTEMA_H
 #define SISTEMA_H
+
 #include <vector>
 #include <string>
 #include <iostream>
 #include <map>
 
+#include "Usuario.h"
 
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
@@ -181,6 +183,28 @@ class Sistema {
 				@return uma string vazia em caso de sucesso ou uma mensagem de erro em caso de falha.
 		*/
 		std::string list_messages(int id);
+
+		/**
+		 * Método responsável por conferir se já existe um email cadastrado durante o cadastro.
+		 * @param email o email do usuário informado no comando create-user.
+		 * @return T caso email já esteja cadastrado. F caso contrário. 
+		 */
+		bool validaEmail( std::string email );
+
+		/**
+		 * Método responsável por medir o tamanho do vetor usuários.
+		 * @return a quantidade de usuários ou o valor nulo, caso ainda não hajam usuários criados. 
+		 */
+	    Usuario* buscaUltimo();
+
+		/**
+		 * Método responsável por atribuir o id de um usuário.
+		 * @param user um usuário cadastrado no sistema.
+		 */
+		void atribuiId( Usuario &user );
+
+	private:
+		std::vector<Usuario> usuarios; //<! vetor com os usuários cadastrados
 };
 
 #endif
