@@ -7,6 +7,7 @@
 #include <map>
 
 #include "Usuario.h"
+#include "Servidor.h"
 
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
@@ -192,19 +193,23 @@ class Sistema {
 		bool validaEmail( std::string email );
 
 		/**
-		 * Método responsável por medir o tamanho do vetor usuários.
-		 * @return a quantidade de usuários ou o valor nulo, caso ainda não hajam usuários criados. 
-		 */
-	    Usuario* buscaUltimo();
-
-		/**
 		 * Método responsável por atribuir o id de um usuário.
 		 * @param user um usuário cadastrado no sistema.
 		 */
-		void atribuiId( Usuario &user );
+		void atribuiIdUsuario( Usuario &user );
+
+		Usuario* credenciaUser( std::string email, std::string senha );
+
+		bool comparaNomes( std::string nome );
+
+		void atribuiIdServidor( Servidor &server );
 
 	private:
-		std::vector<Usuario> usuarios; //<! vetor com os usuários cadastrados
+		std::vector<Usuario*> usuarios; //<! vetor com os usuários cadastrados
+		std::vector<Servidor> servidores;
+		std::map < int, std::pair<int, int> > usuariosLogados;
+		std::map < int, std::pair<int, int> >::iterator itr;
+
 };
 
 #endif
