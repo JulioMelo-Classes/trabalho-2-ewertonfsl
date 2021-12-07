@@ -13,13 +13,16 @@ using namespace std;
 string Sistema::quit() {
   return "Finalizando o Concordo";
 }
-
+//Checkin 1, nesse caso vc está criando um objeto e depois usando uma cópia
+//se vc vai usar dessa forma, melhor não usar new.
 string Sistema::create_user (const string email, const string senha, const string nome) 
 {
   if ( validaEmail( email ) ) 
   	return "Este e-mail já está registrado";
 
-  Usuario *user = new Usuario( email, senha, nome );
+  //aqui vc poderia fazer Usuario user(email, senha, nome), da forma como está causa memory leak.
+  //se arrumar, lembre de remover os *
+  Usuario *user = new Usuario( email, senha, nome ); 
   
   atribuiIdUsuario( *user );
 
@@ -56,6 +59,8 @@ string Sistema::disconnect(int id) {
 	return "disconnect NÃO IMPLEMENTADO";
 }
 
+//Checkin 2 vou considerar 0,7 uma vez que a estrutura da classe Servidor está diferente
+//da especificação.
 string Sistema::create_server(int id, const string nome) 
 {
   // Confere se usuário está logado.
@@ -66,7 +71,9 @@ string Sistema::create_server(int id, const string nome)
   if( comparaNomes(nome) )
     return "Servidor '" + nome + "' já existe";
 
-  Servidor *server = new Servidor( id, nome );
+  //mesmo erro do create user, nesse caso o vetor de servidores não precisa ter referencias então vc poderia fazer
+  //Servidor server(id, nome). Vc vai precisar remover os * de onde colocou.
+  Servidor *server = new Servidor( id, nome ); 
 
   atribuiIdServidor( *server );
 
@@ -121,6 +128,8 @@ string Sistema::enter_server(int id, const string nome, const string codigo)
   if( codigo == "" )
   {
     Servidor server; 
+    //blz, eu não faria assim, uma vez que podemos deletar
+    //usuarios, a posição id-1 não corresponde à real posição do usuário no vetor
     server.addParticipante( usuarios.at( id-1 ) );
 
     int idServidor;
