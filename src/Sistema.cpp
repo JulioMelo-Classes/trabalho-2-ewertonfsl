@@ -99,7 +99,7 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 //   }
 //   else
 //     return "Você não pode mudar o código de um servidor que não é seu";
-  return "NÃO IMPLEMENTADO"";
+  return "NÃO IMPLEMENTADO";
 }
 
 string Sistema::list_servers(int id) {
