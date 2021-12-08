@@ -26,17 +26,53 @@ class Servidor {
          */    
         Servidor( int id, std::string nome );
     
+        /**
+         * Atualiza o id de um servidor.
+         * @param id 
+         */
         void setId( int id );
 
+        /**
+         * Retorna o id de um servidor.
+         * @return id de um servidor. 
+         */
         int getId();
 
+        /**
+         * Atualiza o dono de um servidor.
+         * @param dono 
+         */
         void setDono( Usuario* dono );
 
-        Usuario* getDono();
+        /**
+         * Retorna o dono de um servidor.
+         * @return dono de um servidor. 
+         */
+        int getDono();
 
+        /**
+         * Retorna o nome de um servidor.
+         * @return nome de um servidor. 
+         */
         std::string getNome();
 
+        /**
+         * Atualiza o vetor de participantes do servidor.
+         * @param userId 
+         */
         void addParticipante( Usuario* userId );
+
+        /**
+         * Atualiza o código de convite de um servidor.
+         * @param codigo 
+         */
+        void setCodigoConvite( std::string codigo );
+
+        /**
+         * Retorna o código de convite de um servidor.
+         * @return código de convite de um servidor. 
+         */
+        std::string getCodigoConvite();
 };
 
 #endif

@@ -186,23 +186,37 @@ class Sistema {
 		std::string list_messages(int id);
 
 		/**
-		 * Método responsável por conferir se já existe um email cadastrado durante o cadastro.
+		 * Percorre vetor de usuários e compara emails para saber se um usuário já foi cadastrado com o email fornecido.
 		 * @param email o email do usuário informado no comando create-user.
 		 * @return T caso email já esteja cadastrado. F caso contrário. 
 		 */
 		bool validaEmail( std::string email );
 
 		/**
-		 * Método responsável por atribuir o id de um usuário.
+		 * Atribui o id de um usuário.
 		 * @param user um usuário cadastrado no sistema.
 		 */
 		void atribuiIdUsuario( Usuario &user );
-
+		
+		/**
+ 		 * Confere se email e senha fornecidos pertencem a um usuário cadastrado.
+ 		 * @param email o email do usuário.
+ 		 * @param senha a senha de um usuário.
+ 		 * @return Caso T, retorna o usuário na posição em que foi encontrado. Caso F, retorna nulo.
+ 		 */
 		Usuario* credenciaUser( std::string email, std::string senha );
 
+		/**
+ 		 * Percorre vetor de servidores e compara nomes para saber se nome fornecido já pertence ao vetor.
+  		 * @param nome o nome de um servidor.
+ 		 */
 		bool comparaNomes( std::string nome );
-
-		void atribuiIdServidor( Servidor &server );
+		
+		/**
+ 		 * Atribui um id a um servidor. 
+ 		 * @param server um servidor.
+ 		 */				
+		void atribuiIdServidor( Servidor server );
 
 	private:
 		std::vector<Usuario*> usuarios; //<! vetor com os usuários cadastrados
