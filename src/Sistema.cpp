@@ -19,7 +19,7 @@ string Sistema::create_user (const string email, const string senha, const strin
   if ( validaEmail( email ) ) 
   	return "Este e-mail já está registrado";
 
-  Usuario *user = new Usuario( email, senha, nome );
+  Usuario *user = new Usuario( email, senha, nome ); 
   
   atribuiIdUsuario( *user );
 
