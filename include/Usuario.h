@@ -6,7 +6,7 @@
 class Usuario
 {
     private:
-        int id;
+        unsigned int id;
         std::string nome;
         std::string email;
         std::string senha;

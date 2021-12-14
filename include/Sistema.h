@@ -211,12 +211,6 @@ class Sistema {
   		 * @param nome o nome de um servidor.
  		 */
 		bool comparaNomes( std::string nome );
-		
-		/**
- 		 * Atribui um id a um servidor. 
- 		 * @param server um servidor.
- 		 */				
-		void atribuiIdServidor( Servidor server );
 
 	private:
 		std::vector<Usuario*> usuarios; //<! vetor com os usuários cadastrados

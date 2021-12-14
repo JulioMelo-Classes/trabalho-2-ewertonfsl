@@ -1,0 +1,44 @@
+create-user ewerton@ufrn.edu.br 123 Ewerton Fernandes
+create-user julio@imd.ufrn.br 456 Julio
+login ewerton@ufrn.edu.br 123
+login julio@imd.ufrn.br 456
+disconnect 1
+disconnect 1
+create-server 1 meu_servidor DESLOGADO
+set-server-desc 1 meu_servidor adicionando uma descrição DESLOGADO
+set-server-invite-code 1 meu_servidor codigo DESLOGADO
+list-servers 1 DESLOGADO
+enter-server 1 DESLOGADO
+leave-server 1 DESLOGADO
+list-participants 1 DESLOGADO
+login ewerton@ufrn.edu.br 123
+create-server 1 meu_servidor
+create-server 1 meu_servidor
+enter-server 1 meu_servidor
+set-server-desc 1 meu_servidor adicionando uma descrição
+set-server-desc 1 servidor_inexistente adicionando uma descrição
+set-server-invite-code 1 meu_servidor codigo
+leave-server 1 meu_servidor
+enter-server 1 meu_servidor
+set-server-invite-code 1 meu_servidor
+set-server-desc 2 meu_servidor adicionando outra descrição
+set-server-invite-code 2 meu_servidor codigo
+list-servers 1
+set-server-invite-code 1 meu_servidor novo codigo
+enter-server 1 inexistente
+enter-server 2 meu_servidor
+enter-server 2 meu_servidor novo codigo
+leave-server 2 meu_servidor
+leave-server 2 meu_servidor
+leave-server 2 inexistente
+create-server 1 primeiro
+create-server 1 segundo
+create-server 1 terceiro
+list-servers 1
+enter-server 1 primeiro
+enter-server 2 primeiro
+list-participants 1
+create-user fora@gmail.com 123 fora de servidor
+login fora@gmail.com 123
+list-participants 3
+quit

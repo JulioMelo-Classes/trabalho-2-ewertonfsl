@@ -1,6 +1,8 @@
+#include <algorithm>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 
 #include "Sistema.h"
 #include "Usuario.h"
@@ -10,7 +12,14 @@ using namespace std;
 
 
 /* COMANDOS */
-string Sistema::quit() {
+
+string Sistema::quit() 
+{
+  for( auto i = 0; i < usuarios.size(); i++ )
+  {
+    delete usuarios.at(i);
+  }
+
   return "Finalizando o Concordo";
 }
 
@@ -53,7 +62,13 @@ string Sistema::login(const string email, const string senha)
 }
 
 string Sistema::disconnect(int id) {
-	return "disconnect NÃO IMPLEMENTADO";
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Já está desconectado";
+
+  usuariosLogados.erase( id );
+
+  return "Desconectando usuário " + usuarios.at( id-1 )->getEmail();
 }
 
 string Sistema::create_server(int id, const string nome) 
@@ -68,7 +83,16 @@ string Sistema::create_server(int id, const string nome)
 
   Servidor server = Servidor( id, nome );
 
-  atribuiIdServidor( server );
+  int ultimoServidor = servidores.size();
+
+  if ( ultimoServidor == 0 )
+    server.setId( 1 );
+
+  else 
+  {
+    int novoIdServidor = ultimoServidor + 1;
+    server.setId( novoIdServidor );
+  }
 
   server.setDono( usuarios.at(id-1) );
 
@@ -77,8 +101,29 @@ string Sistema::create_server(int id, const string nome)
   return "Servidor '" + nome + "' criado";
 }
 
-string Sistema::set_server_desc(int id, const string nome, const string descricao) {
-	return "set_server_desc NÃO IMPLEMENTADO";
+string Sistema::set_server_desc(int id, const string nome, const string descricao) 
+{
+  itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
+
+  // Estrutura usada para percorrer vetor de servidores e encontrar seu id;
+  int idServidor;
+  for( auto i = 0; i < servidores.size(); i++ )
+  {
+    if ( servidores.at(i).getNome() == nome )
+      idServidor = servidores.at(i).getId();
+  }  
+
+  if( !comparaNomes( nome ) )
+    return "Servidor '" + nome + "' não existe";
+
+  if( usuarios.at( idServidor-1 )->getId() != id )
+    return "Você não pode mudar a descrição de um servidor que não foi criado por você";
+  
+  servidores.at( idServidor-1 ).setDescricao( descricao );
+
+	return "Descrição do servidor '" + nome + "' modificada";
 }
 
 string Sistema::set_server_invite_code(int id, const string nome, const string codigo) 
@@ -87,6 +132,14 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 	itr = usuariosLogados.find( id );
   if( itr == usuariosLogados.end() )
     return "Necessário fazer login para usar esse comando";
+
+  // Estrutura usada para percorrer vetor de servidores e encontrar seu id;
+  int idServidor;
+  for( auto i = 0; i < servidores.size(); i++ )
+  {
+    if ( servidores.at(i).getNome() == nome )
+      idServidor = servidores.at(i).getId();
+  }
 
   // Estrutura usada para percorrer vetor de servidores e encontrar seu dono;
   int donoServidor;
@@ -102,20 +155,32 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
     // Caso o campo codigo não seja fornecido no comando.
     if ( codigo.length() == 0 )
     {
-      servidores.at( id-1 ).setCodigoConvite( codigo );
+      servidores.at( idServidor-1 ).setCodigoConvite( codigo );
       return "Código de convite do servidor '" + nome + "' removido!";
     }
 
-    servidores.at( id-1 ).setCodigoConvite( codigo );
+    servidores.at( idServidor-1 ).setCodigoConvite( codigo );
     return "Código de convite do servidor '" + nome + "' modificado!";
   }
 
   else
-    return "Você não pode mudar o código de um servidor que não é seu";
+    return "Você não pode mudar o código de um servidor que não foi criado por você";
 }
 
-string Sistema::list_servers(int id) {
-	return "list_servers NÃO IMPLEMENTADO";
+string Sistema::list_servers(int id) 
+{
+  // Confere se usuário está logado.
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
+  
+  for ( auto i = 0; i < servidores.size(); i++ )
+  {
+    if ( id == servidores.at(i).getDono() )
+      cout << servidores.at(i).getNome() << endl;
+  }
+
+  return "";
 }
 
 string Sistema::remove_server(int id, const string nome) {
@@ -129,7 +194,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo)
   if( itr == usuariosLogados.end() )
     return "Necessário fazer login para usar esse comando";
 
-  // Estrutura usada para percorrer vetor de servidores e encontrar seu dono;
+  // Estrutura usada para percorrer vetor de servidores e encontrar seu dono.
   int donoServidor;
   for( auto i = 0; i < servidores.size(); i++ )
   {
@@ -137,158 +202,227 @@ string Sistema::enter_server(int id, const string nome, const string codigo)
       donoServidor = servidores.at(i).getDono();
   } 
 
-  // Estrutura usada para percorrer vetor de servidores e encontrar seu dono;
+  // Estrutura usada para percorrer vetor de servidores e encontrar seu id.
   int idServidor;
   for( auto i = 0; i < servidores.size(); i++ )
   {
     if ( servidores.at(i).getNome() == nome )
+    {
       idServidor = servidores.at(i).getId();
+    }
   }
 
-  // Caso servidor seja aberto (sem código de convite definido).
-  if( servidores.at( idServidor-1 ).getCodigoConvite() == "" or donoServidor == id )
+  // Validação dos ids
+  if ( (idServidor-1) >= 0 and (id-1) >= 0 ) 
   {
-    Servidor server;
-    server.addParticipante( usuarios.at( id-1 ) );
+    // Caso servidor seja aberto (sem código de convite definido).
+    if( servidores.at( idServidor-1 ).getCodigoConvite() == "" or donoServidor == id )
+    {
+      servidores.at( idServidor-1 ).addParticipante( usuarios.at( id-1 ) );
 
-    usuariosLogados.at( id ).first = idServidor;
+      usuariosLogados.at( id ).first = idServidor;
 
-    return "Entrou no servidor com sucesso";
-  }  
+      return "Entrou no servidor com sucesso";
+    }  
 
-  // Caso seja fornecido o código válido para o servidor.
-  if ( codigo == servidores.at( idServidor-1 ).getCodigoConvite() )
-  {
-    Servidor server;
-    server.addParticipante( usuarios.at( id-1 ) );
-    
-    usuariosLogados.at( id ).first = idServidor;
-    
-    return "Entrou no servidor com sucesso";
+    // Caso seja fornecido o código válido para o servidor.
+    if ( codigo == servidores.at( idServidor-1 ).getCodigoConvite() )
+    {
+      servidores.at( idServidor-1 ).addParticipante( usuarios.at( id-1 ) );
+      
+      usuariosLogados.at( id ).first = idServidor;
+      
+      return "Entrou no servidor com sucesso";
+    }
+  
+    return "Servidor requer código de convite";
   }
 
-  return "Servidor requer código de convite";
+  return "Servidor '" + nome + "' não encontrado";
 }
 
-string Sistema::leave_server(int id, const string nome) {
-	return "leave_server NÃO IMPLEMENTADO";
+// CONFERIR REMOÇAO
+string Sistema::leave_server(int id, const string nome) 
+{
+  // Confere se usuário está logado.
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
+
+  // Estrutura usada para percorrer vetor de servidores e encontrar seu id.
+  int idServidor = 0;
+  for( auto i = 0; i < servidores.size(); i++ )
+  {
+    if ( servidores.at(i).getNome() == nome )
+    {
+      idServidor = servidores.at(i).getId();
+    }
+  }
+
+  // Validação dos ids
+  if ( (idServidor-1) >= 0 and (id-1) >= 0 ) 
+  {
+    if( comparaNomes( nome ) )
+    {
+      if( usuariosLogados.at(id).first == idServidor )
+      {
+        usuariosLogados.at( id ).first = 0;
+        usuariosLogados.at( id ).second = 0;
+        return "Saindo do servidor '" + nome + "'";
+      }
+    
+      bool estaEmServidor;
+      for( auto i = 0; i < servidores.size(); i++ )
+      {
+        if( itr == usuariosLogados.end() )
+          estaEmServidor = false;
+      }
+
+      if( estaEmServidor )
+        return "Você não está nesse servidor";
+    }
+  }
+  
+  return "Servidor '" + nome + "' não encontrado";
 }
 
-string Sistema::list_participants(int id) {
-	return "list_participants NÃO IMPLEMENTADO";
+string Sistema::list_participants(int id) 
+{
+  // Confere se usuário está logado.
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
+
+  //tentar usar os que estão sendo visualizados em usuarioLogado iterator
+
+  if( usuariosLogados.at(id).first == 0)
+    return "Você não está em qualquer servidor";
+
+  for ( auto i = 1; i <= usuariosLogados.size(); i++ )
+  {
+    if( usuariosLogados.at(i).first == usuariosLogados.at(id).first )
+    {
+      cout << usuarios.at(i-1)->getNome() << endl;
+    }
+  }
+  
+  return "";
 }
 
 string Sistema::list_channels(int id) {
 	return "list_channels NÃO IMPLEMENTADO";
 }
 
-string Sistema::create_channel(int id, const string nome) {
-	return "create_channel NÃO IMPLEMENTADO";
+string Sistema::create_channel(int id, const string nome) 
+{
+  // Confere se usuário está logado.
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
+
+  CanalTexto channel = CanalTexto( id, nome );
+
+  // Confere se o usuário do id fornecido está visualizando um servidor.
+  if( usuariosLogados.at(id).first > 0 )
+  {
+    for( auto i = 0; i < servidores.size(); i++ )
+    {
+      if( servidores.at(i).comparaCanais( nome ) )
+        return "Canal '" + nome + "' já existe";
+      else
+      {
+        servidores.at(i).addCanal( channel );
+
+        servidores.at(i).setIdCanal( nome );
+
+        return "Canal '" + nome + "' criado";
+      }
+    }
+  }
+
+  return "Você não está em um servidor";
 }
 
 string Sistema::remove_channel(int id, const string nome) {
 	return "remove_channel NÃO IMPLEMENTADO";
 }
 
-string Sistema::enter_channel(int id, const string nome) {
-	return "enter_channel NÃO IMPLEMENTADO";
+
+string Sistema::enter_channel(int id, const string nome)
+{
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
+
+  // Confere se o usuário do id fornecido está visualizando um servidor.
+  if( usuariosLogados.at(id).first > 0 )
+  {
+    for( auto i = 0; i < servidores.size(); i++ )
+    {
+      if( servidores.at(i).comparaCanais( nome ) )
+      {
+        usuariosLogados.at(id).second = servidores.at(i).getIdCanal( nome );
+
+        return "Entrou no canal '" + nome + "'";
+      }
+    }
+    
+    return "Canal '" + nome + "' não existe";
+  }
+
+  return "Você não está em um servidor";
 }
 
 string Sistema::leave_channel(int id) {
 	return "leave_channel NÃO IMPLEMENTADO";
 }
 
-string Sistema::send_message(int id, const string mensagem) {
-	return "send_message NÃO IMPLEMENTADO";
-}
-
-string Sistema::list_messages(int id) {
-	return "list_messages NÃO IMPLEMENTADO";
-}
-
-
-/**
- * Percorre vetor de usuários e compara emails para saber se um usuário já foi cadastrado com o email fornecido.
- * @param email o email do usuário informado no comando create-user.
- * @return T caso email já esteja cadastrado. F caso contrário. 
- */
-bool Sistema::validaEmail( string email ) 
+string Sistema::send_message(int id, const string mensagem)
 {
-  for (int i = 0; i < usuarios.size(); i++) 
-  {
-    if ( usuarios.at(i)->getEmail() == email)
-	  return true;
-  }
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
 
-  return false;
+  if( usuariosLogados.at(id).second > 0 )
+  {
+    auto tempo = time( nullptr );
+    auto dataHoraAtual = *localtime( &tempo );
+
+    stringstream ss;
+    ss << put_time( &dataHoraAtual, "<%d/%m/%Y - %H:%M>: " );
+    string dataHora = ss.str();
+
+    for( auto i = 0; i < servidores.size(); i++ )
+    {
+      if( servidores.at(i).getId() == usuariosLogados.at(id).first )
+      {
+        servidores.at(i).recebeMensagem( usuariosLogados.at(id).second, usuarios.at(id-1), dataHora, mensagem  );
+        return "Mensagem enviada";
+      }
+    }
+  }  
+
+  return "Você não está em um canal";
 }
 
-/**
- * Atribui o id de um usuário.
- * @param user um usuário cadastrado no sistema.
- */
-void Sistema::atribuiIdUsuario( Usuario &user ) 
+string Sistema::list_messages(int id) 
 {
-  int ultimoUsuario = usuarios.size();
+	itr = usuariosLogados.find( id );
+  if( itr == usuariosLogados.end() )
+    return "Necessário fazer login para usar esse comando";
 
-  if ( ultimoUsuario == 0 )
-    user.setId( 1 );
-
-  else 
+  if( usuariosLogados.at(id).second > 0 )
   {
-    int novoIdUsuario = ultimoUsuario + 1;
-    user.setId( novoIdUsuario );
-  }
-}
+    for( auto i = 0; i < servidores.size(); i++ )
+    {
+      if( servidores.at(i).getId() == usuariosLogados.at(id).first )
+      {
+        servidores.at(i).listaMensagens( usuariosLogados.at(id).second );
+      }
+    }
 
-/**
- * Confere se email e senha fornecidos pertencem a um usuário cadastrado.
- * @param email o email do usuário.
- * @param senha a senha de um usuário.
- * @return Caso T, retorna o usuário na posição em que foi encontrado. Caso F, retorna nulo.
- */
-Usuario* Sistema::credenciaUser( string email, string senha )
-{
-  for ( auto i = 0; i < usuarios.size(); i++ )
-  {
-    bool validaUser = usuarios.at(i)->getEmail() == email and usuarios.at(i)->getSenha() == senha;
+    return "";
+  }  
 
-    if( validaUser )
-      return usuarios.at(i);
-  }
-
-  return nullptr;
-}
-
-/**
- * Percorre vetor de servidores e compara nomes para saber se nome fornecido já pertence ao vetor.
- * @param nome o nome de um servidor.
- */
-bool Sistema::comparaNomes( string nome )
-{
-  for( auto i = 0; i < servidores.size(); i++ )
-  {
-    if( servidores.at(i).getNome() == nome )
-      return true;
-  }
-
-  return false;
-}
-
-/**
- * Atribui um id a um servidor. 
- * @param server um servidor.
- */
-void Sistema::atribuiIdServidor( Servidor server ) 
-{
-  int ultimoServidor = servidores.size();
-
-  if ( ultimoServidor == 0 )
-    server.setId( 1 );
-
-  else 
-  {
-    int novoIdServidor = ultimoServidor + 1;
-    server.setId( novoIdServidor );
-  }
+  return "Você não está em um canal";
 }

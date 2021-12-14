@@ -1,0 +1,18 @@
+create-user ewerton@ufrn.edu.br senha Ewerton Fernandes
+create-user julio@imd.ufrn.br a1b2c3 Julio
+login ewerton@ufrn.edu.br senha
+login julio@imd.ufrn.br a1b2c3
+create-server 1 LP1
+enter-server 1 LP1
+enter-server 2 LP1
+create-channel 1 IMD0030-T01
+send-message 1 estou fora de um canal
+list-messages 1 
+enter-channel 1 IMD0030-T01
+enter-channel 2 IMD0030-T01
+send-message 1 isso é um teste
+send-message 2 olá mundo
+send-message 1 feliz natal
+send-message 1 finalizando o trabalho
+list-messages 1
+quit

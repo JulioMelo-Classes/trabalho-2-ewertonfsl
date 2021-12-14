@@ -1,0 +1,5 @@
+create-user ewerton@ufrn.edu.br SENHA_VALIDA Ewerton Fernandes
+create-user ewerton@ufrn.edu.br SENHA_VALIDA Ewerton Fernandes
+login ewerton@ufrn.edu.br SENHA_ERRADA
+login ewerton@ufrn.edu.br SENHA_VALIDA
+quit

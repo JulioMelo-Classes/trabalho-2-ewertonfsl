@@ -1,0 +1,16 @@
+create-user ewerton@ufrn.edu.br 123 Ewerton Fernandes
+create-user julio@imd.ufrn.br 456 Julio
+create-channel 1 DESLOGADO
+enter-channel 1 DESLOGADO
+login ewerton@ufrn.edu.br 123
+login julio@imd.ufrn.br 456
+create-server 1 meu_servidor
+create-channel 1 FORA DE SERVIDOR
+enter-server 1 meu_servidor
+enter-server 2 meu_servidor
+enter-channel 1 inexistente
+create-channel 1 chat
+create-channel 1 chat
+enter-channel 1 chat
+enter-channel 2 chat
+quit
