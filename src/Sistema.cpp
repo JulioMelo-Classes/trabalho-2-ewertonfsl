@@ -348,6 +348,7 @@ string Sistema::remove_channel(int id, const string nome) {
 }
 
 
+//checkin 4.1 e 4.2 ok
 string Sistema::enter_channel(int id, const string nome)
 {
 	itr = usuariosLogados.find( id );
@@ -377,9 +378,10 @@ string Sistema::leave_channel(int id) {
 	return "leave_channel NÃO IMPLEMENTADO";
 }
 
+//checkin 4.3 e 4.4 ok
 string Sistema::send_message(int id, const string mensagem)
 {
-	itr = usuariosLogados.find( id );
+	itr = usuariosLogados.find( id ); //esse iterator não precisa ser membro da classe, vc poderia declarar ele localmente neste método
   if( itr == usuariosLogados.end() )
     return "Necessário fazer login para usar esse comando";
 
@@ -396,6 +398,7 @@ string Sistema::send_message(int id, const string mensagem)
     {
       if( servidores.at(i).getId() == usuariosLogados.at(id).first )
       {
+        //A data/hora poderia ser criada dentro do construtor de mensagem
         servidores.at(i).recebeMensagem( usuariosLogados.at(id).second, usuarios.at(id-1), dataHora, mensagem  );
         return "Mensagem enviada";
       }
