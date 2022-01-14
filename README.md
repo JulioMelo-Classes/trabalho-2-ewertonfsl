@@ -51,3 +51,42 @@ B1.5 - Remover um canal no servidor
 ## Limitações
 Não poder usar atributos públicos nas classes, principalmente ao manipular vetores.
 Também me enrolei um pouco para modularizar trechos de código então houve certa repetição.
+
+# Avaliação
+## Funcionalidades
+- A1.2 ok
+- A1.3 nok
+- A1.4 ok
+- A2.1 ok
+- A2.2 ok
+- A2.3 ok
+- A2.4 ok
+- A2.5 ok
+- A2.6 nok
+- A2.7 ok
+- A2.8 40%
+Você faz boa parte da checagem mas não remove o usuario efetivamente da lista de participantes do servidor
+- A2.9 20%
+Aqui você deveria ter listado os participantes do servidor em que o usuário está. Um participante pode não estar logado e pode não estar visualizando o servidor,
+na prática você precisava iterar na lista de usuários que foram adicionados no servidor e imprimir os nomes.
+- B1.1 nok
+- B1.2 ok
+- B1.3 ok
+- B1.4 nok
+- B1.5 nok
+- B2.1 ok
+- B2.2 ok
+
+## Classes
+- Servidor ok
+- Canal ok
+- Mensagem ok
+
+## Boas Práticas
+- Documentação 80%
+Faltou documentar os atributos
+- Testes ok
+- Organização ok
+
+## Observações
+Como conversamos acho que voce poderia tercerizar mais as atividades para as classes que são inclusas em sistema, fora isso acho que ficou ok.
